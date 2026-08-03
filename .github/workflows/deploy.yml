@@ -10,6 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate required secrets
+        shell: bash
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SERVER_FRONTEND_PATH: ${{ secrets.SERVER_FRONTEND_PATH }}
+          SERVER_BACKEND_PATH: ${{ secrets.SERVER_BACKEND_PATH }}
+          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          set -e
+          for name in SERVER_HOST SERVER_USER SERVER_PORT SERVER_SSH_KEY SERVER_FRONTEND_PATH SERVER_BACKEND_PATH BACKEND_PORT ADMIN_USERNAME ADMIN_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          done
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -29,10 +50,17 @@ jobs:
       - name: Setup SSH key
         shell: bash
         run: |
+          set -e
           mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SERVER_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -p "${{ secrets.SERVER_PORT }}" -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Verify SSH access
+        shell: bash
+        run: |
+          set -e
+          ssh -o BatchMode=yes -o ConnectTimeout=15 -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "echo SSH_OK && pwd"
 
       - name: Deploy files to server
         shell: bash
