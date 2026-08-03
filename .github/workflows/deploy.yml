@@ -73,24 +73,23 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SERVER_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "${{ secrets.SERVER_PORT }}" -H "$SERVER_HOST_CLEAN" >> ~/.ssh/known_hosts
 
       - name: Verify SSH access
         shell: bash
         run: |
           set -e
-          ssh -o BatchMode=yes -o ConnectTimeout=15 -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN" "echo SSH_OK && pwd"
+          ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN" "echo SSH_OK && pwd"
 
       - name: Deploy files to server
         shell: bash
         run: |
-          rsync -az --delete -e "ssh -p ${{ secrets.SERVER_PORT }}" frontend/dist/ "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN:${{ secrets.SERVER_FRONTEND_PATH }}/"
-          rsync -az --delete -e "ssh -p ${{ secrets.SERVER_PORT }}" --exclude "node_modules" --exclude ".env" backend/ "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN:${{ secrets.SERVER_BACKEND_PATH }}/"
+          rsync -az --delete -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p ${{ secrets.SERVER_PORT }}" frontend/dist/ "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN:${{ secrets.SERVER_FRONTEND_PATH }}/"
+          rsync -az --delete -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p ${{ secrets.SERVER_PORT }}" --exclude "node_modules" --exclude ".env" backend/ "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN:${{ secrets.SERVER_BACKEND_PATH }}/"
 
       - name: Install backend deps and restart service
         shell: bash
         run: |
-          ssh -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN" '
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@$SERVER_HOST_CLEAN" '
             set -e
             cd "${{ secrets.SERVER_BACKEND_PATH }}"
             if [ -f package-lock.json ]; then
