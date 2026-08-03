@@ -1,0 +1,62 @@
+[
+  {
+    "id": "offer-1",
+    "title": "A5-es jegyzetfüzet",
+    "description": "Finom, sima lapok és tartós fedél – a mindennapi jegyzeteléshez.",
+    "price": "1490",
+    "tag": "Új",
+    "image": "/uploads/ap800771-10-a-medium_jpg-1785753093868.jpg",
+    "published": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "offer-2",
+    "title": "Fénymásolópapír A4",
+    "description": "Kiváló minőségű, tiszta nyomatokhoz ideális papír.",
+    "price": "690",
+    "tag": "Akció",
+    "image": "/uploads/groby-fenymasolopapir-canon-yellow-label-a4-5x500-lap-full-1785753123072.jpg",
+    "published": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "offer-3",
+    "title": "Gél toll",
+    "description": "Sima írás és kellemes tapadás – irodai és otthoni használatra egyaránt.",
+    "price": "890",
+    "tag": "Népszerű",
+    "image": "/uploads/res_c819de6ad5211cbcd6a5312e48e9d558-1785753147468.jpg",
+    "published": true,
+    "sortOrder": 3
+  },
+  {
+    "id": "offer-4",
+    "title": "Kézi feliratozó filc",
+    "description": "Erős színek és gyors munkavégzés – címkézéshez és dekorációhoz.",
+    "price": "520",
+    "tag": "Szezonális",
+    "image": "/uploads/let-lt-s-1785753179703.webp",
+    "published": true,
+    "sortOrder": 4
+  },
+  {
+    "id": "offer-5",
+    "title": "Papírboríték készlet",
+    "description": "Egységes, elegáns borítékok levelezéshez és ajándékokhoz.",
+    "price": "1290",
+    "tag": "Kiváló",
+    "image": "/uploads/UP004-xx-10db_boritek_c6_11x16cm_csoport.jpg-1785753224516.webp",
+    "published": true,
+    "sortOrder": 5
+  },
+  {
+    "id": "offer-6",
+    "title": "Színes jegyzettömb",
+    "description": "Könnyen használható, praktikus jegyzettömb a gyors feljegyzésekhez.",
+    "price": "980",
+    "tag": "Ajánlat",
+    "image": "/uploads/let-lt-s-1-1785753277301.webp",
+    "published": true,
+    "sortOrder": 6
+  }
+]

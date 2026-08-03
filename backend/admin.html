@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Benettpapír Admin</title>
+    <link rel="stylesheet" href="/admin.css?v=1" />
+  </head>
+  <body>
+    <div class="container">
+      <section class="card auth-card" id="login-card">
+        <div class="auth-header">
+          <h1>Benettpapír Admin</h1>
+        </div>
+        <form id="login-form">
+          <label>
+            Felhasználónév
+            <input id="login-username" name="username" required />
+          </label>
+          <label>
+            Jelszó
+            <input id="login-password" name="password" type="password" required />
+          </label>
+          <button type="submit">Bejelentkezés</button>
+          <div id="login-status" class="auth-status"></div>
+        </form>
+      </section>
+
+      <section class="card hidden" id="admin-content">
+        <div class="auth-header">
+          <div class="nav-tabs" id="admin-nav">
+            <button type="button" class="nav-tab is-active" data-view="offers">Ajánlatok</button>
+            <button type="button" class="nav-tab" data-view="menu-items">Akció</button>
+            <button type="button" class="nav-tab" data-view="instagram">Instagram</button>
+          </div>
+          <button type="button" class="secondary" id="logout-button">Kijelentkezés</button>
+        </div>
+        <form id="offer-form" class="hidden">
+          <label>
+            Név
+            <input name="title" required />
+          </label>
+          <label>
+            Leírás
+            <textarea name="description" rows="3" required></textarea>
+          </label>
+          <label>
+            Ár
+            <input name="price" required />
+          </label>
+          <label>
+            Címke
+            <input name="tag" required />
+          </label>
+          <label>
+            Kép
+          </label>
+          <input name="image" id="image-input" type="hidden" />
+          <div class="dropzone" id="image-dropzone">
+            <p><strong>Húzd ide a képet</strong> vagy kattints a feltöltéshez</p>
+            <input id="image-upload" type="file" accept="image/*" hidden />
+          </div>
+          <div id="upload-preview" class="upload-preview hidden"></div>
+          <button type="button" class="secondary" id="remove-image-button">Kép törlése</button>
+          <label>
+            Sorrend
+            <input name="sortOrder" type="number" min="1" step="1" />
+          </label>
+          <label>
+            Megjelenítés a weboldalon
+            <input name="published" type="checkbox" checked />
+          </label>
+          <button type="submit">Mentés</button>
+        </form>
+      </section>
+
+      <section class="card hidden" id="offers-card">
+        <div class="table-toolbar">
+          <h2>Aktuális ajánlatok</h2>
+          <button type="button" id="add-offer-button">Új hozzáadása</button>
+        </div>
+        <div id="offers"></div>
+      </section>
+
+      <section class="card hidden" id="menu-items-card">
+        <div class="table-toolbar">
+          <h2>Napi kedvencek</h2>
+          <button type="button" id="add-menu-item-button">Új hozzáadása</button>
+        </div>
+        <div id="menu-items"></div>
+      </section>
+
+      <section class="card hidden" id="instagram-card">
+        <div class="table-toolbar">
+          <h2>Instagram posztok</h2>
+          <button type="button" id="add-instagram-post-button">Új poszt</button>
+        </div>
+        <form id="instagram-import-form">
+          <label>
+            Instagram profil vagy poszt URL
+            <input name="profileUrl" placeholder="https://www.instagram.com/papirbenett/" required />
+          </label>
+          <button type="submit">Importálás</button>
+        </form>
+        <div id="instagram-import-status" class="auth-status"></div>
+        <form id="instagram-form" class="hidden">
+          <label>
+            Caption
+            <textarea name="caption" rows="3" required></textarea>
+          </label>
+          <label>
+            Kép URL
+            <input name="mediaUrl" required />
+          </label>
+          <label>
+            Instagram link
+            <input name="permalink" />
+          </label>
+          <label>
+            Dátum
+            <input name="timestamp" type="datetime-local" />
+          </label>
+          <label>
+            Megjelenhet a honlapon
+            <input name="published" type="checkbox" checked />
+          </label>
+          <button type="submit">Mentés</button>
+        </form>
+        <div id="instagram-posts"></div>
+      </section>
+    </div>
+
+    <script src="/admin.js?v=2"></script>
+  </body>
+</html>

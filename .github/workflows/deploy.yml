@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Setup SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy files to server
+        shell: bash
+        run: |
+          rsync -az --delete -e "ssh -p ${{ secrets.SERVER_PORT }}" frontend/dist/ "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_FRONTEND_PATH }}/"
+          rsync -az --delete -e "ssh -p ${{ secrets.SERVER_PORT }}" --exclude "node_modules" --exclude ".env" backend/ "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_BACKEND_PATH }}/"
+
+      - name: Install backend deps and restart service
+        shell: bash
+        run: |
+          ssh -p "${{ secrets.SERVER_PORT }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" '
+            set -e
+            cd "${{ secrets.SERVER_BACKEND_PATH }}"
+            if [ -f package-lock.json ]; then
+              npm ci --omit=dev
+            else
+              npm install --omit=dev
+            fi
+            export PORT="${{ secrets.BACKEND_PORT }}"
+            export ADMIN_USERNAME="${{ secrets.ADMIN_USERNAME }}"
+            export ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
+            pm2 restart benettpapir-backend --update-env || pm2 start server.js --name benettpapir-backend --update-env
+            pm2 save
+          '

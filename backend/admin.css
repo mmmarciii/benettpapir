@@ -1,0 +1,162 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, Arial, sans-serif;
+}
+body {
+  margin: 0;
+  background: #111827;
+  color: #f9fafb;
+  padding: 2rem;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+}
+.card {
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+}
+form {
+  display: grid;
+  gap: 0.9rem;
+}
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+input, textarea {
+  border: 1px solid #374151;
+  background: #111827;
+  color: #f9fafb;
+  padding: 0.8rem;
+  border-radius: 10px;
+}
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+}
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+  background: #f59e0b;
+  color: #111827;
+  cursor: pointer;
+}
+.auth-card {
+  max-width: 420px;
+  margin: 0 auto;
+}
+.auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.auth-status {
+  min-height: 1.2rem;
+  color: #fca5a5;
+  font-size: 0.95rem;
+}
+.hidden {
+  display: none;
+}
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.nav-tab {
+  border: 1px solid #374151;
+  background: #111827;
+  color: #f9fafb;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.nav-tab.is-active {
+  background: #f59e0b;
+  color: #111827;
+}
+.offer-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.offer-table th,
+.offer-table td {
+  border-bottom: 1px solid #374151;
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.offer-table tbody tr {
+  cursor: pointer;
+}
+.offer-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.offer-table .actions-cell {
+  white-space: nowrap;
+}
+.offer-table .action-button {
+  margin-right: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+.offer-table .status-pill {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+.secondary {
+  background: #374151;
+  color: #f9fafb;
+}
+.muted {
+  color: #9ca3af;
+}
+.dropzone {
+  border: 2px dashed #f59e0b;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.08);
+  cursor: pointer;
+}
+.dropzone.is-dragging {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #fcd34d;
+}
+.upload-preview {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.upload-preview img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+}

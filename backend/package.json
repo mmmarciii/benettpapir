@@ -1,0 +1,10 @@
+{
+  "name": "benettpapir-cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simple offer CMS backend for the Benettpapir frontend",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

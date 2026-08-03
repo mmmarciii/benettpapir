@@ -1,0 +1,20 @@
+[
+  {
+    "id": "menu-item-1785748422650",
+    "name": "Nyár végi kiárusítás",
+    "description": "-10% a megjelölt termékekre",
+    "price": "0",
+    "image": "/uploads/warren-umoh-Me7y3DYfIBE-unsplash-1785748416259.jpg",
+    "published": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "menu-item-1785748344066",
+    "name": "Iskolakezdés",
+    "description": "Iskolaszezon -10% kedvezmény",
+    "price": "0",
+    "image": "/uploads/welcome-uWh-hYisqAw-unsplash-1785748282783.jpg",
+    "published": true,
+    "sortOrder": 1
+  }
+]
