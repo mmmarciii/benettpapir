@@ -24,7 +24,7 @@ Ez a dokumentum a most beallitott GitHub Actions pipeline-hoz keszult.
    - BACKEND_PORT
    - ADMIN_USERNAME
    - ADMIN_PASSWORD
-   - VITE_API_BASE_URL
+   - VITE_API_URL
 
 Megjegyzes: az SSH kulcs private resze kerul a SERVER_SSH_KEY secretbe.
 
