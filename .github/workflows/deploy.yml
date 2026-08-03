@@ -6,11 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  check-secrets:
     runs-on: ubuntu-latest
-
+    outputs:
+      secrets_available: ${{ steps.check.outputs.available }}
     steps:
-      - name: Validate required secrets
+      - name: Check secrets availability
+        id: check
         shell: bash
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
@@ -24,12 +26,25 @@ jobs:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           set -e
+          missing=""
           for name in SERVER_HOST SERVER_USER SERVER_PORT SERVER_SSH_KEY SERVER_FRONTEND_PATH SERVER_BACKEND_PATH BACKEND_PORT ADMIN_USERNAME ADMIN_PASSWORD; do
             if [ -z "${!name}" ]; then
-              echo "Missing required secret: $name"
-              exit 1
+              missing="$missing $name"
             fi
           done
+          if [ -n "$missing" ]; then
+            echo "Deploy secrets not configured ($missing) — skipping deployment."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.secrets_available == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
 
       - name: Checkout
         uses: actions/checkout@v5
