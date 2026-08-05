@@ -4,7 +4,7 @@ import { AboutSection } from './components/AboutSection'
 import { ContactSection } from './components/ContactSection'
 import { FooterSection } from './components/FooterSection'
 import { HeroSection } from './components/HeroSection'
-import { InstagramSection } from './components/InstagramSection'
+{/*import { InstagramSection } from './components/InstagramSection'*/}
 import { SpecialOfferSection } from './components/MenuSection'
 
 function App() {
@@ -42,7 +42,7 @@ function App() {
         <HeroSection />
         <SpecialOfferSection />
         <AboutSection />
-        <InstagramSection />
+        {/*<InstagramSection />*/}
         <ContactSection />
       </main>
 

@@ -42,6 +42,14 @@ Megjegyzes: az FTP deploy celmappak a workflow-ban vannak beallitva:
 Fontos: a frontend VITE_API_URL valtozojanak a PHP backend URL-jere kell mutatnia,
 peldaul: https://benettpapir.hu/Backend
 
+Adatvedelem deploynal:
+
+- a backend deploy kizarja a runtime fajlokat, igy ezek nem irodnak felul:
+  - Backend/.env
+  - Backend/data/\*\*
+  - Backend/uploads/\*\*
+  - Backend/instagram-feed.json
+
 ## 4. Pipeline mukodes
 
 - CI automatikusan fut minden pull requestre es main push-ra.

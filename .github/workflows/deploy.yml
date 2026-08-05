@@ -66,6 +66,7 @@ jobs:
           local-dir: ./backend/
           server-dir: ${{ env.FTP_BACKEND_PATH }}
           state-name: .ftp-backend-state.json
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
@@ -73,6 +74,11 @@ jobs:
             **/*.test.js
             **/.env
             **/.env.*
+            .env
+            .env.*
+            data/**
             **/data/**
+            uploads/**
             **/uploads/**
+            instagram-feed.json
             **/inspect_instagram*.py
