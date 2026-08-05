@@ -11,7 +11,7 @@ jobs:
     environment: production
     env:
       FTP_FRONTEND_PATH: public_html/benettpapir/Frontend/
-      FTP_BACKEND_PATH: public_html/benettpapir/Backend/
+      FTP_BACKEND_PATH: public_html/benettpapir/Frontend/Backend/
 
     steps:
       - name: Validate required secrets

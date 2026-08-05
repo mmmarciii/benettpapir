@@ -28,19 +28,19 @@ Ezert a backend at lett irva PHP-ra, hogy ugyanazon a tarhelyen fusson.
 Megjegyzes: az FTP deploy celmappak a workflow-ban vannak beallitva:
 
 - public_html/benettpapir/Frontend/
-- public_html/benettpapir/Backend/
+- public_html/benettpapir/Frontend/Backend/
 
 ## 3. Amit a szerveren kell megcsinalnod egyszer
 
 1. A frontendhez es a PHP backendhez eleg az FTP es a webkiszolgalo.
 2. Hozd letre a cel mappakat:
    - public_html/benettpapir/Frontend/
-   - public_html/benettpapir/Backend/
+   - public_html/benettpapir/Frontend/Backend/
 3. Add jogosultsagot a deploy usernek ezekre a mappakra.
 4. HTTPS: Let's Encrypt / certbot.
 
 Fontos: a frontend VITE_API_URL valtozojanak a PHP backend URL-jere kell mutatnia,
-peldaul: https://benettpapir.hu/benettpapir/Backend
+peldaul: https://benettpapir.hu/Backend
 
 ## 4. Pipeline mukodes
 
