@@ -141,7 +141,9 @@ if ($method === 'GET' && $path === '/api/content-events') {
 }
 
 if ($method === 'GET' && $path === '/api/offers') {
-    json_response(200, array_values(array_filter(read_offers($DEFAULT_OFFERS), static fn($o) => ($o['published'] ?? true) !== false)));
+    json_response(200, array_values(array_filter(read_offers($DEFAULT_OFFERS), static function ($o) {
+        return ($o['published'] ?? true) !== false;
+    })));
 }
 
 if ($method === 'GET' && $path === '/api/offers/admin') {
@@ -172,7 +174,9 @@ if ($method === 'DELETE' && starts_with($path, '/api/offers/')) {
 }
 
 if ($method === 'GET' && $path === '/api/menu-items') {
-    json_response(200, array_values(array_filter(read_menu_items($DEFAULT_MENU_ITEMS), static fn($o) => ($o['published'] ?? true) !== false)));
+    json_response(200, array_values(array_filter(read_menu_items($DEFAULT_MENU_ITEMS), static function ($o) {
+        return ($o['published'] ?? true) !== false;
+    })));
 }
 
 if ($method === 'GET' && $path === '/api/menu-items/admin') {
@@ -226,7 +230,9 @@ if ($method === 'POST' && $path === '/api/upload') {
 
 if ($method === 'GET' && $path === '/api/instagram-feed') {
     $posts = read_instagram_posts();
-    $visible = array_values(array_filter($posts, static fn($post) => ($post['published'] ?? true) !== false));
+    $visible = array_values(array_filter($posts, static function ($post) {
+        return ($post['published'] ?? true) !== false;
+    }));
     json_response(200, ['posts' => $visible]);
 }
 
@@ -483,7 +489,7 @@ function write_json_array_file(string $path, array $items): void
     file_put_contents($path, json_encode(array_values($items), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-function normalize_published(mixed $value, bool $fallback = true): bool
+function normalize_published($value, bool $fallback = true): bool
 {
     if (is_bool($value)) {
         return $value;
@@ -496,7 +502,7 @@ function normalize_published(mixed $value, bool $fallback = true): bool
     return $fallback;
 }
 
-function normalize_sort_order(mixed $value, int $fallback): int
+function normalize_sort_order($value, int $fallback): int
 {
     if (is_numeric($value)) {
         return (int)$value;
@@ -515,7 +521,9 @@ function read_offers(array $defaultOffers): array
         return $offer;
     }, $offers);
 
-    usort($normalized, static fn(array $a, array $b) => ($a['sortOrder'] ?? 999) <=> ($b['sortOrder'] ?? 999));
+    usort($normalized, static function (array $a, array $b): int {
+        return ($a['sortOrder'] ?? 999) <=> ($b['sortOrder'] ?? 999);
+    });
     return $normalized;
 }
 
@@ -602,7 +610,9 @@ function update_offer(string $id, array $payload, array $defaultOffers): array
 function delete_offer(string $id, array $defaultOffers): void
 {
     $offers = read_offers($defaultOffers);
-    $next = array_values(array_filter($offers, static fn(array $offer): bool => ($offer['id'] ?? '') !== $id));
+    $next = array_values(array_filter($offers, static function (array $offer) use ($id): bool {
+        return ($offer['id'] ?? '') !== $id;
+    }));
 
     if (count($next) === count($offers)) {
         json_response(404, ['error' => 'Az ajanlat nem talalhato']);
@@ -621,7 +631,9 @@ function read_menu_items(array $defaultMenuItems): array
         return $item;
     }, $items);
 
-    usort($normalized, static fn(array $a, array $b) => ($a['sortOrder'] ?? 999) <=> ($b['sortOrder'] ?? 999));
+    usort($normalized, static function (array $a, array $b): int {
+        return ($a['sortOrder'] ?? 999) <=> ($b['sortOrder'] ?? 999);
+    });
     return $normalized;
 }
 
@@ -704,7 +716,9 @@ function update_menu_item(string $id, array $payload, array $defaultMenuItems): 
 function delete_menu_item(string $id, array $defaultMenuItems): void
 {
     $items = read_menu_items($defaultMenuItems);
-    $next = array_values(array_filter($items, static fn(array $item): bool => ($item['id'] ?? '') !== $id));
+    $next = array_values(array_filter($items, static function (array $item) use ($id): bool {
+        return ($item['id'] ?? '') !== $id;
+    }));
 
     if (count($next) === count($items)) {
         json_response(404, ['error' => 'A menuelem nem talalhato']);
@@ -791,7 +805,9 @@ function update_instagram_post(string $id, array $payload): array
 function delete_instagram_post(string $id): void
 {
     $posts = read_instagram_posts();
-    $next = array_values(array_filter($posts, static fn(array $post): bool => ($post['id'] ?? '') !== $id));
+    $next = array_values(array_filter($posts, static function (array $post) use ($id): bool {
+        return ($post['id'] ?? '') !== $id;
+    }));
 
     if (count($next) === count($posts)) {
         json_response(404, ['error' => 'Instagram post not found']);
