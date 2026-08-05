@@ -12,6 +12,27 @@ type InstagramPost = {
   timestamp: string
 }
 
+function resolveImageUrl(image?: string) {
+  if (!image) {
+    return ''
+  }
+
+  if (/^https?:\/\//i.test(image) || image.startsWith('data:')) {
+    return image
+  }
+
+  if (image.startsWith('/')) {
+    const apiUrl = new URL(API_BASE_URL, window.location.origin)
+    const apiPath = apiUrl.pathname.replace(/\/$/, '')
+
+    if (apiPath && image.startsWith(`${apiPath}/`)) {
+      return `${apiUrl.origin}${image}`
+    }
+  }
+
+  return `${API_BASE_URL}${image.startsWith('/') ? image : `/${image}`}`
+}
+
 export function InstagramSection() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [posts, setPosts] = useState<InstagramPost[]>([])
@@ -118,7 +139,7 @@ export function InstagramSection() {
                     </div>
                   </div>
                   {post.mediaUrl ? (
-                    <img src={post.mediaUrl} alt={title} className="instagram-post-image" loading="lazy" />
+                    <img src={resolveImageUrl(post.mediaUrl)} alt={title} className="instagram-post-image" loading="lazy" />
                   ) : null}
                   <div className="instagram-post-actions">
                     <Heart size={18} strokeWidth={2} />

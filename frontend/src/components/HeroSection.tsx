@@ -20,6 +20,15 @@ function resolveImageUrl(image?: string) {
     return image
   }
 
+  if (image.startsWith('/')) {
+    const apiUrl = new URL(API_BASE_URL, window.location.origin)
+    const apiPath = apiUrl.pathname.replace(/\/$/, '')
+
+    if (apiPath && image.startsWith(`${apiPath}/`)) {
+      return `${apiUrl.origin}${image}`
+    }
+  }
+
   return `${API_BASE_URL}${image.startsWith('/') ? image : `/${image}`}`
 }
 
