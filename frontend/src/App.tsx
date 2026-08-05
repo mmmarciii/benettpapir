@@ -39,6 +39,10 @@ function App() {
           </nav>
         </header>
 
+        <aside className="site-notice" role="status" aria-live="polite">
+          <strong>Fejlesztés alatt:</strong> az oldal jelenleg tesztelés alatt áll, egyes funkciók ideiglenesen változhatnak.
+        </aside>
+
         <HeroSection />
         <SpecialOfferSection />
         <AboutSection />

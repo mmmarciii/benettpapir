@@ -10,7 +10,7 @@ export function AboutSection() {
             Hazai családi vállalkozásunk már több mint 25 éve biztosít mindent az irodai, iskolai vagy óvodai munkához a papír-írószerektől a kreatív hobbi termékekig.
         </p>
         <p>
-            Váci üzletünkben (Dr. Csányi László körút 29., a zsinagóga mellett) személyesen is örömmel várjuk Önt, ami webáruházunk átvevőpontja is.
+            Váci üzletünkben (Dr. Csányi László körút 29., a zsinagóga mellett) személyesen is örömmel várjuk Önt.
         </p>
         <p>
             Vásárlóink visszajelzései alapján a hatalmas választék mellett leginkább a kedves, barátságos kiszolgálásra vagyunk büszkék. 
