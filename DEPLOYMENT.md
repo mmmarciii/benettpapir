@@ -15,30 +15,30 @@ Ez a dokumentum a most beallitott GitHub Actions pipeline-hoz keszult.
 1. Toltsd fel a kodot GitHub repo-ba.
 2. Allitsd public-ra a repot (ha ezt szeretned).
 3. Settings > Secrets and variables > Actions > New repository secret alatt hozd letre:
-   - SERVER_HOST
-   - SERVER_USER
-   - SERVER_PORT
-   - SERVER_SSH_KEY
-   - SERVER_FRONTEND_PATH
-   - SERVER_BACKEND_PATH
-   - BACKEND_PORT
-   - ADMIN_USERNAME
-   - ADMIN_PASSWORD
+   - FTP_SERVER
+   - FTP_USERNAME
+   - FTP_PASSWORD
    - VITE_API_URL
 
-Megjegyzes: az SSH kulcs private resze kerul a SERVER_SSH_KEY secretbe.
+Megjegyzes: az FTP deploy celmappak a workflow-ban vannak beallitva:
+
+- /home/benettpa/benettpapir/Frontend/
+- /home/benettpa/benettpapir/Backend/
 
 ## 3. Amit a szerveren kell megcsinalnod egyszer
 
-1. Telepitsd: Node.js 20+, npm, pm2, rsync, nginx.
+1. Telepitsd: Node.js 20+, npm, pm2, nginx.
 2. Hozd letre a cel mappakat:
-   - SERVER_FRONTEND_PATH (pl. /var/www/benettpapir/frontend)
-   - SERVER_BACKEND_PATH (pl. /var/www/benettpapir/backend)
+   - /home/benettpa/benettpapir/Frontend/
+   - /home/benettpa/benettpapir/Backend/
 3. Add jogosultsagot a deploy usernek ezekre a mappakra.
 4. Nginx-ben allitsd be:
-   - frontend static root a SERVER_FRONTEND_PATH mappajara
-   - /api proxy a backend folyamathoz (localhost:BACKEND_PORT)
+   - frontend static root a Frontend mappajara
+   - /api proxy a backend folyamathoz (localhost:3001)
 5. HTTPS: Let's Encrypt / certbot.
+
+Fontos: FTP deploy csak fajlokat tolt fel. A backend ujrainditasat (pm2 restart),
+es az .env valtozok beallitasat szerveroldalon kulon kell kezelned.
 
 ## 4. Pipeline mukodes
 
