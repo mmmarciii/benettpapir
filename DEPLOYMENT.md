@@ -2,6 +2,11 @@
 
 Ez a dokumentum a most beallitott GitHub Actions pipeline-hoz keszult.
 
+## 0. Jelenlegi hosting korlat
+
+A jelenlegi tarhelyen nincs Node.js alkalmazas futtatasi lehetoseg, ezert a backend nem futtathato helyben.
+A Deploy workflow emiatt csak a frontendet telepiti FTP-vel.
+
 ## 1. Mit keszitettunk el a repoban
 
 - CI workflow: .github/workflows/ci.yml
@@ -20,25 +25,20 @@ Ez a dokumentum a most beallitott GitHub Actions pipeline-hoz keszult.
    - FTP_PASSWORD
    - VITE_API_URL
 
-Megjegyzes: az FTP deploy celmappak a workflow-ban vannak beallitva:
+Megjegyzes: az FTP deploy celmappa a workflow-ban van beallitva:
 
 - /home/benettpa/benettpapir/Frontend/
-- /home/benettpa/benettpapir/Backend/
 
 ## 3. Amit a szerveren kell megcsinalnod egyszer
 
-1. Telepitsd: Node.js 20+, npm, pm2, nginx.
+1. A frontendhez eleg az FTP es a webkiszolgalo.
 2. Hozd letre a cel mappakat:
    - /home/benettpa/benettpapir/Frontend/
-   - /home/benettpa/benettpapir/Backend/
 3. Add jogosultsagot a deploy usernek ezekre a mappakra.
-4. Nginx-ben allitsd be:
-   - frontend static root a Frontend mappajara
-   - /api proxy a backend folyamathoz (localhost:3001)
-5. HTTPS: Let's Encrypt / certbot.
+4. HTTPS: Let's Encrypt / certbot.
 
-Fontos: FTP deploy csak fajlokat tolt fel. A backend ujrainditasat (pm2 restart),
-es az .env valtozok beallitasat szerveroldalon kulon kell kezelned.
+Fontos: a backendet kulon Node.js kepes szolgaltatasra kell deployolni (pl. VPS, Render, Railway),
+majd a frontend VITE_API_URL valtozojaban arra kell mutatni.
 
 ## 4. Pipeline mukodes
 
@@ -58,5 +58,4 @@ es az .env valtozok beallitasat szerveroldalon kulon kell kezelned.
 3. Ha zold, nyisd meg a domaint.
 4. Ellenorizd:
    - frontend betolt
-   - admin login mukodik
-   - backend API endpointok valaszolnak
+   - backend API endpointok kulon szolgaltatasrol valaszolnak
