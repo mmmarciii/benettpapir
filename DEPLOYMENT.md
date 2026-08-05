@@ -4,8 +4,8 @@ Ez a dokumentum a most beallitott GitHub Actions pipeline-hoz keszult.
 
 ## 0. Jelenlegi hosting korlat
 
-A jelenlegi tarhelyen nincs Node.js alkalmazas futtatasi lehetoseg, ezert a backend nem futtathato helyben.
-A Deploy workflow emiatt csak a frontendet telepiti FTP-vel.
+A jelenlegi tarhelyen nincs Node.js alkalmazas futtatasi lehetoseg.
+Ezert a backend at lett irva PHP-ra, hogy ugyanazon a tarhelyen fusson.
 
 ## 1. Mit keszitettunk el a repoban
 
@@ -25,20 +25,22 @@ A Deploy workflow emiatt csak a frontendet telepiti FTP-vel.
    - FTP_PASSWORD
    - VITE_API_URL
 
-Megjegyzes: az FTP deploy celmappa a workflow-ban van beallitva:
+Megjegyzes: az FTP deploy celmappak a workflow-ban vannak beallitva:
 
-- /home/benettpa/benettpapir/Frontend/
+- public_html/benettpapir/Frontend/
+- public_html/benettpapir/Backend/
 
 ## 3. Amit a szerveren kell megcsinalnod egyszer
 
-1. A frontendhez eleg az FTP es a webkiszolgalo.
+1. A frontendhez es a PHP backendhez eleg az FTP es a webkiszolgalo.
 2. Hozd letre a cel mappakat:
-   - /home/benettpa/benettpapir/Frontend/
+   - public_html/benettpapir/Frontend/
+   - public_html/benettpapir/Backend/
 3. Add jogosultsagot a deploy usernek ezekre a mappakra.
 4. HTTPS: Let's Encrypt / certbot.
 
-Fontos: a backendet kulon Node.js kepes szolgaltatasra kell deployolni (pl. VPS, Render, Railway),
-majd a frontend VITE_API_URL valtozojaban arra kell mutatni.
+Fontos: a frontend VITE_API_URL valtozojanak a PHP backend URL-jere kell mutatnia,
+peldaul: https://benettpapir.hu/benettpapir/Backend
 
 ## 4. Pipeline mukodes
 
@@ -58,4 +60,4 @@ majd a frontend VITE_API_URL valtozojaban arra kell mutatni.
 3. Ha zold, nyisd meg a domaint.
 4. Ellenorizd:
    - frontend betolt
-   - backend API endpointok kulon szolgaltatasrol valaszolnak
+   - backend API endpointok valaszolnak a /Backend/api/\* utvonalon

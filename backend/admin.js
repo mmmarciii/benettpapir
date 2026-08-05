@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const backendBasePath = window.location.pathname.replace(/\/admin\/?$/i, '')
+  const API_BASE_URL = `${window.location.origin}${backendBasePath}`
+
+  function apiUrl(path) {
+    if (!path) {
+      return API_BASE_URL
+    }
+
+    if (/^https?:\/\//i.test(path)) {
+      return path
+    }
+
+    return `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
+  }
+
   const form = document.getElementById('offer-form')
   const offersContainer = document.getElementById('offers')
   const menuItemsContainer = document.getElementById('menu-items')
@@ -72,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       Authorization: auth,
     }
 
-    const response = await fetch(url, { ...options, headers })
+    const response = await fetch(apiUrl(url), { ...options, headers })
     if (!response.ok) {
       const errorPayload = await response.json().catch(() => ({}))
       throw new Error(errorPayload.error || 'Request failed')
@@ -176,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function uploadImage(file) {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await fetch('/api/upload', {
+    const response = await fetch(apiUrl('/api/upload'), {
       method: 'POST',
       headers: { Authorization: authHeader },
       body: formData,
@@ -433,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const candidateHeader = encodeBasicAuth(username, password)
-    const response = await fetch('/api/offers/admin', {
+    const response = await fetch(apiUrl('/api/offers/admin'), {
       headers: { Authorization: candidateHeader },
     })
 
