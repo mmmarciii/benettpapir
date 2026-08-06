@@ -4,6 +4,7 @@ import { AboutSection } from './components/AboutSection'
 import { ContactSection } from './components/ContactSection'
 import { FooterSection } from './components/FooterSection'
 import { HeroSection } from './components/HeroSection'
+import { HeroImageCarousel } from './components/HeroImageCarousel'
 {/*import { InstagramSection } from './components/InstagramSection'*/}
 import { SpecialOfferSection } from './components/MenuSection'
 
@@ -43,6 +44,7 @@ function App() {
           <strong>Fejlesztés alatt:</strong> az oldal jelenleg tesztelés alatt áll, az akciók és árak nem felelnek meg a valóságnak.
         </aside>
 
+        <HeroImageCarousel />
         <HeroSection />
         <SpecialOfferSection />
         <AboutSection />

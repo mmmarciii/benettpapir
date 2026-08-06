@@ -15,6 +15,7 @@ load_env_file(__DIR__ . '/.env');
 
 const OFFERS_FILE = __DIR__ . '/data/offers.json';
 const MENU_ITEMS_FILE = __DIR__ . '/data/menu-items.json';
+const CAROUSEL_IMAGES_FILE = __DIR__ . '/data/carousel-images.json';
 const INSTAGRAM_FILE = __DIR__ . '/instagram-feed.json';
 const UPLOAD_DIR = __DIR__ . '/uploads';
 const OFFER_PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80';
@@ -101,6 +102,44 @@ $DEFAULT_MENU_ITEMS = [
         'image' => 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80',
         'published' => true,
         'sortOrder' => 2,
+    ],
+];
+
+$DEFAULT_CAROUSEL_IMAGES = [
+    [
+        'id' => 'carousel-1',
+        'alt' => 'Szines jegyzetfuzetek es iroszerek egy asztalon',
+        'image' => 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=1600&q=80',
+        'published' => true,
+        'sortOrder' => 1,
+    ],
+    [
+        'id' => 'carousel-2',
+        'alt' => 'Iskolai tollak es filcek rendezetten',
+        'image' => 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1600&q=80',
+        'published' => true,
+        'sortOrder' => 2,
+    ],
+    [
+        'id' => 'carousel-3',
+        'alt' => 'Kreativ papirtermekek meleg fenyekkel',
+        'image' => 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=1600&q=80',
+        'published' => true,
+        'sortOrder' => 3,
+    ],
+    [
+        'id' => 'carousel-4',
+        'alt' => 'Fuzet es ceruzak minimal stilusban',
+        'image' => 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1600&q=80',
+        'published' => true,
+        'sortOrder' => 4,
+    ],
+    [
+        'id' => 'carousel-5',
+        'alt' => 'Papir iroszer bolt hangulata',
+        'image' => 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1600&q=80',
+        'published' => true,
+        'sortOrder' => 5,
     ],
 ];
 
@@ -226,6 +265,40 @@ if ($method === 'POST' && $path === '/api/upload') {
     }
 
     json_response(201, ['fileName' => $savedName, 'url' => $basePath . '/uploads/' . $savedName]);
+}
+
+if ($method === 'GET' && $path === '/api/carousel-images') {
+    $visible = array_values(array_filter(read_carousel_images($DEFAULT_CAROUSEL_IMAGES), static function ($item) {
+        return ($item['published'] ?? true) !== false;
+    }));
+    json_response(200, $visible);
+}
+
+if ($method === 'GET' && $path === '/api/carousel-images/admin') {
+    require_admin_auth();
+    json_response(200, read_carousel_images($DEFAULT_CAROUSEL_IMAGES));
+}
+
+if ($method === 'POST' && $path === '/api/carousel-images') {
+    require_admin_auth();
+    $payload = read_json_body();
+    $item = create_carousel_image($payload, $DEFAULT_CAROUSEL_IMAGES);
+    json_response(201, $item);
+}
+
+if ($method === 'PUT' && starts_with($path, '/api/carousel-images/')) {
+    require_admin_auth();
+    $payload = read_json_body();
+    $id = basename($path);
+    $item = update_carousel_image($id, $payload, $DEFAULT_CAROUSEL_IMAGES);
+    json_response(200, $item);
+}
+
+if ($method === 'DELETE' && starts_with($path, '/api/carousel-images/')) {
+    require_admin_auth();
+    $id = basename($path);
+    delete_carousel_image($id, $DEFAULT_CAROUSEL_IMAGES);
+    json_response(200, ['deleted' => true, 'id' => $id]);
 }
 
 if ($method === 'GET' && $path === '/api/instagram-feed') {
@@ -725,6 +798,119 @@ function delete_menu_item(string $id, array $defaultMenuItems): void
     }
 
     write_json_array_file(MENU_ITEMS_FILE, $next);
+}
+
+function read_carousel_images(array $defaultCarouselImages): array
+{
+    $items = read_json_array_file(CAROUSEL_IMAGES_FILE, $defaultCarouselImages, true);
+
+    $normalized = array_map(static function (array $item): array {
+        $item['id'] = trim((string)($item['id'] ?? ''));
+        if ($item['id'] === '') {
+            $item['id'] = 'carousel-' . time() . '-' . random_int(100, 999);
+        }
+
+        $item['alt'] = trim((string)($item['alt'] ?? ''));
+        $item['image'] = trim((string)($item['image'] ?? ''));
+        $item['published'] = normalize_published($item['published'] ?? true, true);
+        $item['sortOrder'] = normalize_sort_order($item['sortOrder'] ?? null, 999);
+        return $item;
+    }, $items);
+
+    usort($normalized, static function (array $a, array $b): int {
+        return ($a['sortOrder'] ?? 999) <=> ($b['sortOrder'] ?? 999);
+    });
+
+    return $normalized;
+}
+
+function validate_carousel_image_payload(array $payload, bool $requireImage = true): array
+{
+    $alt = trim((string)($payload['alt'] ?? ''));
+    $image = trim((string)($payload['image'] ?? ''));
+
+    if ($requireImage && $image === '') {
+        json_response(400, ['error' => 'A carousel kep megadasa kotelezo.']);
+    }
+
+    return [
+        'alt' => $alt,
+        'image' => $image,
+    ];
+}
+
+function create_carousel_image(array $payload, array $defaultCarouselImages): array
+{
+    $items = read_carousel_images($defaultCarouselImages);
+    $validated = validate_carousel_image_payload($payload, true);
+
+    $item = [
+        'id' => trim((string)($payload['id'] ?? '')) ?: ('carousel-' . time() . '-' . random_int(100, 999)),
+        'alt' => $validated['alt'],
+        'image' => $validated['image'],
+        'published' => normalize_published($payload['published'] ?? true, true),
+        'sortOrder' => normalize_sort_order($payload['sortOrder'] ?? null, count($items) + 1),
+    ];
+
+    array_unshift($items, $item);
+    write_json_array_file(CAROUSEL_IMAGES_FILE, $items);
+    return $item;
+}
+
+function update_carousel_image(string $id, array $payload, array $defaultCarouselImages): array
+{
+    $items = read_carousel_images($defaultCarouselImages);
+    $index = null;
+
+    foreach ($items as $i => $item) {
+        if (($item['id'] ?? '') === $id) {
+            $index = $i;
+            break;
+        }
+    }
+
+    if ($index === null) {
+        json_response(404, ['error' => 'Carousel kep nem talalhato']);
+    }
+
+    $validated = validate_carousel_image_payload($payload, false);
+    $current = $items[$index];
+    $hasAlt = array_key_exists('alt', $payload);
+    $hasImage = array_key_exists('image', $payload);
+
+    $updated = [
+        'id' => $id,
+        'alt' => $hasAlt ? $validated['alt'] : trim((string)($current['alt'] ?? '')),
+        'image' => $hasImage ? $validated['image'] : trim((string)($current['image'] ?? '')),
+        'published' => array_key_exists('published', $payload)
+            ? normalize_published($payload['published'], true)
+            : normalize_published($current['published'] ?? true, true),
+        'sortOrder' => array_key_exists('sortOrder', $payload)
+            ? normalize_sort_order($payload['sortOrder'], (int)($current['sortOrder'] ?? 999))
+            : normalize_sort_order($current['sortOrder'] ?? null, 999),
+    ];
+
+    if ($updated['image'] === '') {
+        json_response(400, ['error' => 'A carousel kep megadasa kotelezo.']);
+    }
+
+    $items[$index] = $updated;
+    write_json_array_file(CAROUSEL_IMAGES_FILE, $items);
+    return $updated;
+}
+
+function delete_carousel_image(string $id, array $defaultCarouselImages): void
+{
+    $items = read_carousel_images($defaultCarouselImages);
+    $next = array_values(array_filter($items, static function (array $item) use ($id): bool {
+        return ($item['id'] ?? '') !== $id;
+    }));
+
+    if (count($next) === count($items)) {
+        json_response(404, ['error' => 'Carousel kep nem talalhato']);
+    }
+
+    write_json_array_file(CAROUSEL_IMAGES_FILE, $next);
 }
 
 function read_instagram_posts(): array

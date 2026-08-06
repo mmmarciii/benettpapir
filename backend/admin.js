@@ -18,12 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const offersContainer = document.getElementById('offers')
   const menuItemsContainer = document.getElementById('menu-items')
   const instagramPostsContainer = document.getElementById('instagram-posts')
+  const carouselItemsContainer = document.getElementById('carousel-items')
   const instagramImportForm = document.getElementById('instagram-import-form')
   const instagramImportStatus = document.getElementById('instagram-import-status')
   const addOfferButton = document.getElementById('add-offer-button')
   const addMenuItemButton = document.getElementById('add-menu-item-button')
   const addInstagramPostButton = document.getElementById('add-instagram-post-button')
+  const addCarouselItemButton = document.getElementById('add-carousel-item-button')
   const instagramForm = document.getElementById('instagram-form')
+  const carouselForm = document.getElementById('carousel-form')
   const adminNav = document.getElementById('admin-nav')
   const loginForm = document.getElementById('login-form')
   const loginCard = document.getElementById('login-card')
@@ -32,14 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const offersCard = document.getElementById('offers-card')
   const menuItemsCard = document.getElementById('menu-items-card')
   const instagramCard = document.getElementById('instagram-card')
+  const carouselCard = document.getElementById('carousel-card')
   const logoutButton = document.getElementById('logout-button')
   const imageDropzone = document.getElementById('image-dropzone')
   const imageUploadInput = document.getElementById('image-upload')
   const imageInput = document.getElementById('image-input')
   const uploadPreview = document.getElementById('upload-preview')
   const removeImageButton = document.getElementById('remove-image-button')
+  const carouselImageDropzone = document.getElementById('carousel-image-dropzone')
+  const carouselImageUploadInput = document.getElementById('carousel-image-upload')
+  const carouselImageInput = document.getElementById('carousel-image-input')
+  const carouselUploadPreview = document.getElementById('carousel-upload-preview')
+  const removeCarouselImageButton = document.getElementById('remove-carousel-image-button')
 
   let editingId = null
+  let carouselEditingId = null
   let authHeader = null
   let activeView = 'offers'
   let activeEntity = 'offer'
@@ -58,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     offersCard.classList.add('hidden')
     menuItemsCard.classList.add('hidden')
     instagramCard.classList.add('hidden')
+    carouselCard.classList.add('hidden')
     renderView(activeView)
   }
 
@@ -67,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     offersCard.classList.add('hidden')
     menuItemsCard.classList.add('hidden')
     instagramCard.classList.add('hidden')
+    carouselCard.classList.add('hidden')
     loginStatus.textContent = ''
     loginForm.reset()
     authHeader = null
@@ -101,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     offersCard.classList.toggle('hidden', view !== 'offers')
     menuItemsCard.classList.toggle('hidden', view !== 'menu-items')
     instagramCard.classList.toggle('hidden', view !== 'instagram')
+    carouselCard.classList.toggle('hidden', view !== 'carousel')
     adminContent.classList.remove('hidden')
     Array.from(adminNav.querySelectorAll('.nav-tab')).forEach((button) => {
       button.classList.toggle('is-active', button.dataset.view === view)
@@ -111,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setEditorMode('offer')
     }
     closeEditor()
+    closeCarouselEditor()
   }
 
   function showEditor() {
@@ -130,6 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeInstagramEditor() {
     instagramForm.classList.add('hidden')
+  }
+
+  function closeCarouselEditor() {
+    carouselForm.classList.add('hidden')
   }
 
   function getTitleField() {
@@ -210,6 +228,66 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadPreview.innerHTML = `<img src="${payload.url}" alt="Uploaded preview" /><span>${file.name}</span>`
     uploadPreview.classList.remove('hidden')
     return payload.url
+  }
+
+  async function uploadCarouselImage(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(apiUrl('/api/upload'), {
+      method: 'POST',
+      headers: { Authorization: authHeader },
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorPayload = await response.json().catch(() => ({}))
+      throw new Error(errorPayload.error || 'Image upload failed')
+    }
+
+    const payload = await response.json()
+    if (carouselImageInput) {
+      carouselImageInput.value = payload.url
+    }
+    carouselForm.elements.image.value = payload.url
+    carouselUploadPreview.innerHTML = `<img src="${payload.url}" alt="Uploaded preview" /><span>${file.name}</span>`
+    carouselUploadPreview.classList.remove('hidden')
+    return payload.url
+  }
+
+  function clearCarouselPreview() {
+    if (carouselImageUploadInput) {
+      carouselImageUploadInput.value = ''
+    }
+    if (carouselImageInput) {
+      carouselImageInput.value = ''
+    }
+    const imageField = carouselForm.querySelector('input[name="image"]')
+    if (imageField) {
+      imageField.value = ''
+    }
+    carouselUploadPreview.innerHTML = ''
+    carouselUploadPreview.classList.add('hidden')
+  }
+
+  function resetCarouselForm() {
+    carouselEditingId = null
+    carouselForm.reset()
+    const publishedField = carouselForm.querySelector('input[name="published"]')
+    const sortOrderField = carouselForm.querySelector('input[name="sortOrder"]')
+    if (publishedField) {
+      publishedField.checked = true
+    }
+    if (sortOrderField) {
+      sortOrderField.value = 1
+    }
+    clearCarouselPreview()
+    carouselForm.querySelector('button[type="submit"]').textContent = 'Mentés'
+    carouselForm.classList.add('hidden')
+  }
+
+  function showCarouselEditor() {
+    carouselForm.classList.remove('hidden')
+    carouselForm.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   function setEditorMode(mode) {
@@ -436,6 +514,40 @@ document.addEventListener('DOMContentLoaded', () => {
       : '<p class="muted">Még nincs Instagram poszt.</p>'
   }
 
+  async function loadCarouselItems() {
+    const items = await requestJson('/api/carousel-images/admin')
+    carouselItemsContainer.innerHTML = items.length
+      ? `
+        <table class="offer-table">
+          <thead>
+            <tr>
+              <th>Kép</th>
+              <th>Felirat</th>
+              <th>Állapot</th>
+              <th>Sorrend</th>
+              <th>Műveletek</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map((item) => `
+              <tr>
+                <td><img src="${item.image}" alt="preview" style="width:72px;height:48px;object-fit:cover;border-radius:8px;" /></td>
+                <td>${item.alt || '-'}</td>
+                <td><span class="status-pill">${item.published === false ? 'Inaktív' : 'Aktív'}</span></td>
+                <td>${item.sortOrder || 1}</td>
+                <td class="actions-cell">
+                  <button class="action-button secondary" data-action="edit-carousel" data-id="${item.id}">Frissítés</button>
+                  <button class="action-button secondary" data-action="toggle-carousel" data-id="${item.id}" data-published="${item.published === false ? 'false' : 'true'}">${item.published === false ? 'Aktiválás' : 'Inaktiválás'}</button>
+                  <button class="action-button" data-action="delete-carousel" data-id="${item.id}">Törlés</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `
+      : '<p class="muted">Még nincs carousel kép.</p>'
+  }
+
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault()
     const formData = new FormData(loginForm)
@@ -462,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginStatus.textContent = ''
     showAdminArea()
     loginForm.reset()
-    await Promise.all([loadOffers(), loadMenuItems(), loadInstagramPosts()])
+    await Promise.all([loadOffers(), loadMenuItems(), loadInstagramPosts(), loadCarouselItems()])
   })
 
   logoutButton.addEventListener('click', () => {
@@ -471,6 +583,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   removeImageButton.addEventListener('click', () => {
     clearImagePreview()
+  })
+
+  removeCarouselImageButton.addEventListener('click', () => {
+    clearCarouselPreview()
   })
 
   imageDropzone.addEventListener('click', () => imageUploadInput.click())
@@ -515,6 +631,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
+  carouselImageDropzone.addEventListener('click', () => carouselImageUploadInput.click())
+  carouselImageUploadInput.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) {
+      return
+    }
+
+    try {
+      await uploadCarouselImage(file)
+    } catch (error) {
+      showError(error.message || 'Image upload failed')
+    }
+  })
+
+  carouselImageDropzone.addEventListener('dragover', (event) => {
+    event.preventDefault()
+    carouselImageDropzone.classList.add('is-dragging')
+  })
+
+  carouselImageDropzone.addEventListener('dragenter', (event) => {
+    event.preventDefault()
+    carouselImageDropzone.classList.add('is-dragging')
+  })
+
+  carouselImageDropzone.addEventListener('dragleave', (event) => {
+    event.preventDefault()
+    carouselImageDropzone.classList.remove('is-dragging')
+  })
+
+  carouselImageDropzone.addEventListener('drop', async (event) => {
+    const file = event.dataTransfer?.files?.[0]
+    if (!file) {
+      return
+    }
+
+    try {
+      await uploadCarouselImage(file)
+    } catch (error) {
+      showError(error.message || 'Image upload failed')
+    }
+  })
+
   document.addEventListener('mousedown', (event) => {
     if (form.classList.contains('hidden')) {
       return
@@ -526,7 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const clickedInsideForm = form.contains(target)
-    const clickedEditorTrigger = target.closest('#add-offer-button, #add-menu-item-button, .action-button')
+    const clickedEditorTrigger = target.closest('#add-offer-button, #add-menu-item-button, #add-carousel-item-button, .action-button')
 
     if (!clickedInsideForm && !clickedEditorTrigger) {
       closeEditor()
@@ -556,6 +714,11 @@ document.addEventListener('DOMContentLoaded', () => {
       publishedField.checked = true
     }
     showInstagramEditor()
+  })
+
+  addCarouselItemButton.addEventListener('click', () => {
+    resetCarouselForm()
+    showCarouselEditor()
   })
 
   instagramImportForm.addEventListener('submit', async (event) => {
@@ -623,6 +786,38 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadInstagramPosts()
     } catch (error) {
       showError(error.message || 'Instagram poszt mentése nem sikerült.')
+    }
+  })
+
+  carouselForm.addEventListener('submit', async (event) => {
+    event.preventDefault()
+
+    const formData = new FormData(carouselForm)
+    const payload = {
+      alt: String(formData.get('alt') || '').trim(),
+      image: String(formData.get('image') || '').trim(),
+      published: formData.get('published') === 'on',
+      sortOrder: Number(formData.get('sortOrder') || 1),
+    }
+
+    if (!payload.image) {
+      showError('A carousel kép kötelező.')
+      return
+    }
+
+    const method = carouselEditingId ? 'PUT' : 'POST'
+    const url = carouselEditingId ? `/api/carousel-images/${carouselEditingId}` : '/api/carousel-images'
+
+    try {
+      await requestJson(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      resetCarouselForm()
+      await loadCarouselItems()
+    } catch (error) {
+      showError(error.message || 'Carousel elem mentése nem sikerült.')
     }
   })
 
@@ -836,8 +1031,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
+  carouselItemsContainer.addEventListener('click', async (event) => {
+    const target = event.target
+    if (!(target instanceof HTMLElement)) {
+      return
+    }
+
+    const button = target.closest('button[data-action]')
+    if (!button) {
+      return
+    }
+
+    const id = button.dataset.id
+    if (!id) {
+      return
+    }
+
+    try {
+      if (button.dataset.action === 'delete-carousel') {
+        await requestJson(`/api/carousel-images/${id}`, { method: 'DELETE' })
+        await loadCarouselItems()
+        return
+      }
+
+      if (button.dataset.action === 'toggle-carousel') {
+        const current = button.dataset.published === 'true'
+        await requestJson(`/api/carousel-images/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ published: !current }),
+        })
+        await loadCarouselItems()
+        return
+      }
+
+      if (button.dataset.action === 'edit-carousel') {
+        const items = await requestJson('/api/carousel-images/admin')
+        const item = items.find((entry) => entry.id === id)
+        if (!item) {
+          return
+        }
+
+        carouselEditingId = item.id
+        carouselForm.querySelector('input[name="alt"]').value = item.alt || ''
+        carouselForm.querySelector('input[name="image"]').value = item.image || ''
+        carouselForm.querySelector('input[name="sortOrder"]').value = item.sortOrder || 1
+        carouselForm.querySelector('input[name="published"]').checked = item.published !== false
+
+        if (carouselImageInput) {
+          carouselImageInput.value = item.image || ''
+        }
+
+        if (item.image) {
+          carouselUploadPreview.innerHTML = `<img src="${item.image}" alt="Current preview" /><span>Aktuális kép</span>`
+          carouselUploadPreview.classList.remove('hidden')
+        } else {
+          clearCarouselPreview()
+        }
+
+        carouselForm.querySelector('button[type="submit"]').textContent = 'Frissítés'
+        showCarouselEditor()
+      }
+    } catch (error) {
+      showError(error.message || 'Carousel frissítése nem sikerült.')
+    }
+  })
+
   form.addEventListener('reset', () => {
     resetForm()
+  })
+
+  carouselForm.addEventListener('reset', () => {
+    resetCarouselForm()
   })
 
   showLoginArea()

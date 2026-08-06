@@ -32,6 +32,7 @@
             <button type="button" class="nav-tab is-active" data-view="offers">Ajánlatok</button>
             <button type="button" class="nav-tab" data-view="menu-items">Akció</button>
             <button type="button" class="nav-tab" data-view="instagram">Instagram</button>
+            <button type="button" class="nav-tab" data-view="carousel">Carousel</button>
           </div>
           <button type="button" class="secondary" id="logout-button">Kijelentkezés</button>
         </div>
@@ -127,6 +128,45 @@
           <button type="submit">Mentés</button>
         </form>
         <div id="instagram-posts"></div>
+      </section>
+
+      <section class="card hidden" id="carousel-card">
+        <div class="table-toolbar">
+          <h2>Carousel képek</h2>
+          <button type="button" id="add-carousel-item-button">Új kép</button>
+        </div>
+
+        <form id="carousel-form" class="hidden">
+          <label>
+            Felirat (opcionális)
+            <input name="alt" placeholder="Pl. Iskolai eszközök" />
+          </label>
+
+          <label>
+            Kép
+          </label>
+          <input name="image" id="carousel-image-input" type="hidden" />
+          <div class="dropzone" id="carousel-image-dropzone">
+            <p><strong>Húzd ide a képet</strong> vagy kattints a feltöltéshez</p>
+            <input id="carousel-image-upload" type="file" accept="image/*" hidden />
+          </div>
+          <div id="carousel-upload-preview" class="upload-preview hidden"></div>
+          <button type="button" class="secondary" id="remove-carousel-image-button">Kép törlése</button>
+
+          <label>
+            Sorrend
+            <input name="sortOrder" type="number" min="1" step="1" value="1" />
+          </label>
+
+          <label>
+            Aktív
+            <input name="published" type="checkbox" checked />
+          </label>
+
+          <button type="submit">Mentés</button>
+        </form>
+
+        <div id="carousel-items"></div>
       </section>
     </div>
 
